@@ -1,0 +1,31 @@
+# Include documentation files
+include README.md
+include LICENSE
+include CHANGELOG.md
+
+# Include configuration files
+include requirements.txt
+include requirements-dev.txt
+include pyproject.toml
+include setup.py
+
+# Include package data
+recursive-include miragic_sdk *.py
+recursive-include miragic_sdk *.txt
+recursive-include miragic_sdk *.md
+
+# Exclude unnecessary files
+exclude *.pyc
+exclude *.pyo
+exclude *.pyd
+exclude __pycache__
+exclude .git*
+exclude .DS_Store
+exclude *.egg-info
+exclude .pytest_cache
+exclude .coverage
+exclude htmlcov
+exclude .tox
+exclude .venv
+exclude venv
+exclude env
