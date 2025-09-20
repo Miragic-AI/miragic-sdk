@@ -7,6 +7,7 @@ from typing import Union, Optional
 from .background_removal import BackgroundRemover
 from .image_upscaler import ImageUpscaler
 from .blur_background import BlurBackground
+from .api_client import MiragicAPIClient
 
 
 class MiragicSDK:
@@ -19,18 +20,31 @@ class MiragicSDK:
     - Background blur effects
     """
     
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, 
+                 api_key: Optional[str] = None,
+                 use_api: bool = True,
+                 api_base_url: str = "http://147.93.84.74:8085"):
         """
         Initialize the Miragic SDK.
         
         Args:
             api_key (str, optional): API key for enhanced features. 
                                    Can be None for basic free features.
+            use_api (bool): Whether to use server API endpoints (default: False)
+            api_base_url (str): Base URL for API endpoints (default: https://api.miragic.com/v1)
         """
         self.api_key = api_key
-        self.background_remover = BackgroundRemover(api_key)
-        self.image_upscaler = ImageUpscaler(api_key)
-        self.blur_background = BlurBackground(api_key)
+        self.use_api = use_api
+        self.api_base_url = api_base_url
+        
+        if use_api:
+            if not api_key:
+                raise ValueError("API key is required when using server endpoints")
+            self.api_client = MiragicAPIClient(api_key, api_base_url)
+        else:
+            self.background_remover = BackgroundRemover(api_key)
+            self.image_upscaler = ImageUpscaler(api_key)
+            self.blur_background = BlurBackground(api_key)
     
     def remove_background(self, 
                          input_path: Union[str, bytes], 
@@ -51,7 +65,21 @@ class MiragicSDK:
             FileNotFoundError: If input file doesn't exist
             ValueError: If input format is not supported
         """
-        return self.background_remover.remove_background(input_path, output_path, **kwargs)
+        if self.use_api:
+            # Use server API
+            processed_image_bytes = self.api_client.remove_background(input_path, **kwargs)
+            
+            # Ensure output directory exists
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            
+            # Save the result
+            with open(output_path, 'wb') as f:
+                f.write(processed_image_bytes)
+            
+            return output_path
+        else:
+            # Use local processing
+            return self.background_remover.remove_background(input_path, output_path, **kwargs)
     
     def upscale_image(self, 
                      input_path: Union[str, bytes], 
@@ -74,7 +102,21 @@ class MiragicSDK:
             FileNotFoundError: If input file doesn't exist
             ValueError: If scale factor is invalid
         """
-        return self.image_upscaler.upscale(input_path, output_path, scale_factor, **kwargs)
+        if self.use_api:
+            # Use server API
+            processed_image_bytes = self.api_client.upscale_image(input_path, scale_factor, **kwargs)
+            
+            # Ensure output directory exists
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            
+            # Save the result
+            with open(output_path, 'wb') as f:
+                f.write(processed_image_bytes)
+            
+            return output_path
+        else:
+            # Use local processing
+            return self.image_upscaler.upscale(input_path, output_path, scale_factor, **kwargs)
     
     def blur_background(self, 
                        input_path: Union[str, bytes], 
@@ -97,7 +139,21 @@ class MiragicSDK:
             FileNotFoundError: If input file doesn't exist
             ValueError: If blur strength is out of range
         """
-        return self.blur_background.apply_blur(input_path, output_path, blur_strength, **kwargs)
+        if self.use_api:
+            # Use server API
+            processed_image_bytes = self.api_client.blur_background(input_path, blur_strength, **kwargs)
+            
+            # Ensure output directory exists
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            
+            # Save the result
+            with open(output_path, 'wb') as f:
+                f.write(processed_image_bytes)
+            
+            return output_path
+        else:
+            # Use local processing
+            return self.blur_background.apply_blur(input_path, output_path, blur_strength, **kwargs)
     
     def get_version(self) -> str:
         """
@@ -108,3 +164,41 @@ class MiragicSDK:
         """
         from . import __version__
         return __version__
+    
+    def get_api_status(self) -> dict:
+        """
+        Get API server status (only available when using API mode).
+        
+        Returns:
+            dict: API status information
+            
+        Raises:
+            RuntimeError: If not using API mode
+        """
+        if not self.use_api:
+            raise RuntimeError("API status is only available when using API mode")
+        return self.api_client.get_api_status()
+    
+    def get_usage_stats(self) -> dict:
+        """
+        Get API usage statistics (only available when using API mode).
+        
+        Returns:
+            dict: Usage statistics
+            
+        Raises:
+            RuntimeError: If not using API mode
+        """
+        if not self.use_api:
+            raise RuntimeError("Usage stats are only available when using API mode")
+        return self.api_client.get_usage_stats()
+
+
+if __name__ == "__main__":
+    client = MiragicSDK()
+    print(client.get_api_status())
+    # print(client.get_usage_stats())
+    # Save processed images
+    client.remove_background("input.jpg").save("output_nobg.png")
+    client.blur_background("input.jpg", blur_strength=0.8).save("output_blurred.png") 
+    client.upscale_image("input.jpg", scale_factor=2).save("output_upscaled.png")

@@ -30,13 +30,13 @@ from miragic_sdk import MiragicSDK
 sdk = MiragicSDK()
 
 # Remove background from an image
-result = sdk.remove_background("input.jpg", "output.png")
+result = sdk.remove_background("input.jpg").save("output.png")
 
 # Upscale an image
-upscaled = sdk.upscale_image("low_res.jpg", scale_factor=2)
+upscaled = sdk.upscale_image("low_res.jpg", scale_factor=2).save("upscaled.png")
 
 # Apply background blur
-blurred = sdk.blur_background("portrait.jpg", blur_strength=0.8)
+blurred = sdk.blur_background("portrait.jpg", blur_strength=0.8).save("blurred.png")
 ```
 
 ## 📋 Requirements
