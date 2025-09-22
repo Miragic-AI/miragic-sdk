@@ -67,14 +67,13 @@ class MiragicSDK:
         """
         if self.use_api:
             # Use server API
-            processed_image_bytes = self.api_client.remove_background(input_path, **kwargs)
+            processed_image = self.api_client.remove_background(input_path, **kwargs)
             
             # Ensure output directory exists
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             
             # Save the result
-            with open(output_path, 'wb') as f:
-                f.write(processed_image_bytes)
+            processed_image.save(output_path, 'PNG')
             
             return output_path
         else:
@@ -104,14 +103,13 @@ class MiragicSDK:
         """
         if self.use_api:
             # Use server API
-            processed_image_bytes = self.api_client.upscale_image(input_path, scale_factor, **kwargs)
+            processed_image = self.api_client.upscale_image(input_path, scale_factor, **kwargs)
             
             # Ensure output directory exists
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             
             # Save the result
-            with open(output_path, 'wb') as f:
-                f.write(processed_image_bytes)
+            processed_image.save(output_path, quality=kwargs.get('quality', 95))
             
             return output_path
         else:
@@ -141,14 +139,13 @@ class MiragicSDK:
         """
         if self.use_api:
             # Use server API
-            processed_image_bytes = self.api_client.blur_background(input_path, blur_strength, **kwargs)
+            processed_image = self.api_client.blur_background(input_path, blur_strength, **kwargs)
             
             # Ensure output directory exists
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             
             # Save the result
-            with open(output_path, 'wb') as f:
-                f.write(processed_image_bytes)
+            processed_image.save(output_path, quality=kwargs.get('quality', 95))
             
             return output_path
         else:
@@ -192,13 +189,3 @@ class MiragicSDK:
         if not self.use_api:
             raise RuntimeError("Usage stats are only available when using API mode")
         return self.api_client.get_usage_stats()
-
-
-if __name__ == "__main__":
-    client = MiragicSDK()
-    print(client.get_api_status())
-    # print(client.get_usage_stats())
-    # Save processed images
-    client.remove_background("input.jpg").save("output_nobg.png")
-    client.blur_background("input.jpg", blur_strength=0.8).save("output_blurred.png") 
-    client.upscale_image("input.jpg", scale_factor=2).save("output_upscaled.png")

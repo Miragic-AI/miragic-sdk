@@ -82,8 +82,8 @@ def main():
     print("🚀 Starting Miragic SDK upload process...")
     
     # Check if we're in the right directory
-    if not Path('setup.py').exists():
-        print("❌ setup.py not found. Please run this script from the project root.")
+    if not Path('pyproject.toml').exists():
+        print("❌ pyproject.toml not found. Please run this script from the project root.")
         sys.exit(1)
     
     # Check distribution files

@@ -14,10 +14,12 @@ from .core import MiragicSDK
 from .background_removal import BackgroundRemover
 from .image_upscaler import ImageUpscaler
 from .blur_background import BlurBackground
+from .api_client import MiragicAPIClient
 
 __all__ = [
     "MiragicSDK",
     "BackgroundRemover", 
     "ImageUpscaler",
-    "BlurBackground"
+    "BlurBackground",
+    "MiragicAPIClient"
 ]
