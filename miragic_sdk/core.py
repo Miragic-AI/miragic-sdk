@@ -3,6 +3,7 @@ Core Miragic SDK class that provides the main interface for all image processing
 """
 
 import os
+from PIL import Image
 from typing import Union, Optional
 from .background_removal import BackgroundRemover
 from .image_upscaler import ImageUpscaler
@@ -21,7 +22,7 @@ class MiragicSDK:
     """
     
     def __init__(self, 
-                 api_key: Optional[str] = None,
+                 api_key: Optional[str] = "api_key",
                  use_api: bool = True,
                  api_base_url: str = "http://147.93.84.74:8085"):
         """
@@ -48,18 +49,16 @@ class MiragicSDK:
     
     def remove_background(self, 
                          input_path: Union[str, bytes], 
-                         output_path: str,
-                         **kwargs) -> str:
+                         **kwargs) -> Image.Image:
         """
         Remove background from an image.
         
         Args:
             input_path (str or bytes): Path to input image or image data
-            output_path (str): Path where the output image will be saved
             **kwargs: Additional parameters for background removal
             
         Returns:
-            str: Path to the output image
+            Image.Image: PIL Image object
             
         Raises:
             FileNotFoundError: If input file doesn't exist
@@ -69,33 +68,25 @@ class MiragicSDK:
             # Use server API
             processed_image = self.api_client.remove_background(input_path, **kwargs)
             
-            # Ensure output directory exists
-            os.makedirs(os.path.dirname(output_path), exist_ok=True)
-            
-            # Save the result
-            processed_image.save(output_path, 'PNG')
-            
-            return output_path
+            return processed_image
         else:
             # Use local processing
-            return self.background_remover.remove_background(input_path, output_path, **kwargs)
+            return self.background_remover.remove_background(input_path, **kwargs)
     
     def upscale_image(self, 
                      input_path: Union[str, bytes], 
-                     output_path: str,
                      scale_factor: int = 2,
-                     **kwargs) -> str:
+                     **kwargs) -> Image.Image:
         """
         Upscale an image to higher resolution.
         
         Args:
             input_path (str or bytes): Path to input image or image data
-            output_path (str): Path where the upscaled image will be saved
             scale_factor (int): Factor by which to scale the image (default: 2)
             **kwargs: Additional parameters for upscaling
             
         Returns:
-            str: Path to the upscaled image
+            Image.Image: PIL Image object
             
         Raises:
             FileNotFoundError: If input file doesn't exist
@@ -104,34 +95,26 @@ class MiragicSDK:
         if self.use_api:
             # Use server API
             processed_image = self.api_client.upscale_image(input_path, scale_factor, **kwargs)
-            
-            # Ensure output directory exists
-            os.makedirs(os.path.dirname(output_path), exist_ok=True)
-            
-            # Save the result
-            processed_image.save(output_path, quality=kwargs.get('quality', 95))
-            
-            return output_path
+                
+            return processed_image
         else:
             # Use local processing
-            return self.image_upscaler.upscale(input_path, output_path, scale_factor, **kwargs)
+            return self.image_upscaler.upscale(input_path, scale_factor, **kwargs)
     
     def blur_background(self, 
                        input_path: Union[str, bytes], 
-                       output_path: str,
                        blur_strength: float = 0.8,
-                       **kwargs) -> str:
+                       **kwargs) -> Image.Image:
         """
         Apply blur effect to the background of an image.
         
         Args:
             input_path (str or bytes): Path to input image or image data
-            output_path (str): Path where the blurred image will be saved
             blur_strength (float): Strength of blur effect (0.0 to 1.0, default: 0.8)
             **kwargs: Additional parameters for blur effect
             
         Returns:
-            str: Path to the blurred image
+            Image.Image: PIL Image object
             
         Raises:
             FileNotFoundError: If input file doesn't exist
@@ -141,16 +124,10 @@ class MiragicSDK:
             # Use server API
             processed_image = self.api_client.blur_background(input_path, blur_strength, **kwargs)
             
-            # Ensure output directory exists
-            os.makedirs(os.path.dirname(output_path), exist_ok=True)
-            
-            # Save the result
-            processed_image.save(output_path, quality=kwargs.get('quality', 95))
-            
-            return output_path
+            return processed_image
         else:
             # Use local processing
-            return self.blur_background.apply_blur(input_path, output_path, blur_strength, **kwargs)
+            return self.blur_background.apply_blur(input_path, blur_strength, **kwargs)
     
     def get_version(self) -> str:
         """

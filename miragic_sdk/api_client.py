@@ -128,8 +128,6 @@ class MiragicAPIClient:
         
         # Make API request
         response = self._make_request('/remove_background_on_sdk_base64', data)
-
-        print(response)
         
         # Decode and return PIL Image
         if 'base64' in response:

@@ -17,16 +17,10 @@ def main():
     """
     Main function demonstrating API usage.
     """
-    # Replace with your actual API key
-    API_KEY = "your_api_key_here"
     
     # Initialize SDK with API endpoints
     print("🚀 Initializing Miragic SDK with API endpoints...")
-    sdk = MiragicSDK(
-        api_key=API_KEY,
-        use_api=True,  # Enable API mode
-        api_base_url="https://api.miragic.com/v1"  # Your API base URL
-    )
+    sdk = MiragicSDK()
     
     # Check API status
     print("\n📊 Checking API status...")
@@ -38,47 +32,25 @@ def main():
     
     # Example image paths (replace with your actual image paths)
     input_image = "input.jpg"
-    output_dir = "output"
-    
-    # Create output directory
-    os.makedirs(output_dir, exist_ok=True)
     
     # 1. Background Removal Example
     print("\n🎭 Removing background from image...")
     try:
-        result = sdk.remove_background(
-            input_path=input_image,
-            output_path=os.path.join(output_dir, "no_background.png"),
-            threshold=128  # Optional parameter
-        )
-        print(f"✅ Background removed: {result}")
+        sdk.remove_background(input_image).save("no_background.png")
     except Exception as e:
         print(f"❌ Background removal failed: {e}")
     
     # 2. Background Blur Example
     print("\n🌫️ Applying background blur...")
     try:
-        result = sdk.blur_background(
-            input_path=input_image,
-            output_path=os.path.join(output_dir, "blurred_background.jpg"),
-            blur_strength=0.8,  # Strong blur
-            center_focus=True   # Focus on center
-        )
-        print(f"✅ Background blurred: {result}")
+        sdk.blur_background(input_image).save("blurred_background.jpg")
     except Exception as e:
         print(f"❌ Background blur failed: {e}")
     
     # 3. Image Upscaling Example
     print("\n📈 Upscaling image...")
     try:
-        result = sdk.upscale_image(
-            input_path=input_image,
-            output_path=os.path.join(output_dir, "upscaled_2x.jpg"),
-            scale_factor=2,     # 2x upscaling
-            method="lanczos",   # High-quality method
-            sharpen=True        # Apply sharpening
-        )
-        print(f"✅ Image upscaled: {result}")
+        sdk.upscale_image(input_image).save("upscaled_2x.jpg")
     except Exception as e:
         print(f"❌ Image upscaling failed: {e}")
     

@@ -25,20 +25,18 @@ class ImageUpscaler:
     
     def upscale(self, 
                 input_path: Union[str, bytes], 
-                output_path: str,
                 scale_factor: int = 2,
-                **kwargs) -> str:
+                **kwargs) -> Image.Image:
         """
         Upscale an image to higher resolution.
         
         Args:
             input_path (str or bytes): Path to input image or image data
-            output_path (str): Path where the upscaled image will be saved
             scale_factor (int): Factor by which to scale the image (default: 2)
             **kwargs: Additional parameters
             
         Returns:
-            str: Path to the upscaled image
+            Image.Image: PIL Image object
         """
         try:
             # Validate scale factor
@@ -56,13 +54,7 @@ class ImageUpscaler:
             # Apply upscaling algorithm
             upscaled_image = self._upscale_algorithm(image, scale_factor, **kwargs)
             
-            # Ensure output directory exists
-            os.makedirs(os.path.dirname(output_path), exist_ok=True)
-            
-            # Save the result
-            upscaled_image.save(output_path, quality=kwargs.get('quality', 95))
-            
-            return output_path
+            return upscaled_image
             
         except Exception as e:
             raise RuntimeError(f"Image upscaling failed: {str(e)}")
@@ -114,7 +106,6 @@ class ImageUpscaler:
     
     def batch_upscale(self, 
                      input_paths: list, 
-                     output_dir: str,
                      scale_factor: int = 2,
                      **kwargs) -> list:
         """
@@ -122,23 +113,22 @@ class ImageUpscaler:
         
         Args:
             input_paths (list): List of input image paths
-            output_dir (str): Directory to save upscaled images
             scale_factor (int): Scale factor
             **kwargs: Additional parameters
             
         Returns:
-            list: List of output image paths
+            list: List of output image objects
         """
         output_paths = []
         
         for i, input_path in enumerate(input_paths):
             filename = os.path.basename(input_path)
             name, ext = os.path.splitext(filename)
-            output_path = os.path.join(output_dir, f"{name}_upscaled_{scale_factor}x{ext}")
+            output_path = f"{name}_upscaled_{scale_factor}x{ext}"
             
             try:
-                result_path = self.upscale(input_path, output_path, scale_factor, **kwargs)
-                output_paths.append(result_path)
+                result_image = self.upscale(input_path, scale_factor, **kwargs)
+                output_paths.append(result_image)
             except Exception as e:
                 print(f"Failed to upscale {input_path}: {str(e)}")
                 continue

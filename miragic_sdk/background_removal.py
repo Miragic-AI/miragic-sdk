@@ -25,18 +25,16 @@ class BackgroundRemover:
     
     def remove_background(self, 
                          input_path: Union[str, bytes], 
-                         output_path: str,
-                         **kwargs) -> str:
+                         **kwargs) -> Image.Image:
         """
         Remove background from an image.
         
         Args:
             input_path (str or bytes): Path to input image or image data
-            output_path (str): Path where the output image will be saved
             **kwargs: Additional parameters
             
         Returns:
-            str: Path to the output image
+            Image.Image: PIL Image object
         """
         try:
             # Load the input image
@@ -54,13 +52,7 @@ class BackgroundRemover:
             # Apply background removal algorithm
             processed_image = self._remove_background_algorithm(image, **kwargs)
             
-            # Ensure output directory exists
-            os.makedirs(os.path.dirname(output_path), exist_ok=True)
-            
-            # Save the result
-            processed_image.save(output_path, 'PNG')
-            
-            return output_path
+            return processed_image
             
         except Exception as e:
             raise RuntimeError(f"Background removal failed: {str(e)}")
@@ -97,29 +89,27 @@ class BackgroundRemover:
     
     def batch_remove_background(self, 
                                input_paths: list, 
-                               output_dir: str,
                                **kwargs) -> list:
         """
         Remove background from multiple images.
         
         Args:
             input_paths (list): List of input image paths
-            output_dir (str): Directory to save output images
             **kwargs: Additional parameters
             
         Returns:
-            list: List of output image paths
+            list: List of output image objects
         """
         output_paths = []
         
         for i, input_path in enumerate(input_paths):
             filename = os.path.basename(input_path)
             name, ext = os.path.splitext(filename)
-            output_path = os.path.join(output_dir, f"{name}_no_bg.png")
+            output_image = f"{name}_no_bg.png"
             
             try:
-                result_path = self.remove_background(input_path, output_path, **kwargs)
-                output_paths.append(result_path)
+                result_image = self.remove_background(input_path, **kwargs)
+                output_paths.append(result_image)
             except Exception as e:
                 print(f"Failed to process {input_path}: {str(e)}")
                 continue
