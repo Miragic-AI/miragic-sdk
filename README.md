@@ -29,14 +29,17 @@ from miragic_sdk import MiragicSDK
 # Initialize the SDK
 sdk = MiragicSDK()
 
-# Remove background from an image
-result = sdk.remove_background("input.jpg").save("output.png")
+# Remove background from an image and return PIL Image
+pil_img = sdk.remove_background("input.jpg")
+pil_img.save("output.png")
 
-# Upscale an image
-upscaled = sdk.upscale_image("low_res.jpg", scale_factor=2).save("upscaled.png")
+# Upscale an image and return PIL Image
+pil_img = sdk.upscale_image("low_res.jpg", scale_factor=2)
+pil_img.save("upscaled.png")
 
-# Apply background blur
-blurred = sdk.blur_background("portrait.jpg", blur_strength=0.8).save("blurred.png")
+# Apply background blur and return PIL Image
+pil_img = sdk.blur_background("portrait.jpg", blur_strength=0.8)
+pil_img.save("blurred.png")
 ```
 
 ## 📋 Requirements
@@ -62,10 +65,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Links
 
-- [Website](https://miragic.com)
-- [Documentation](https://docs.miragic.com)
-- [GitHub Repository](https://github.com/miragic/miragic-sdk)
-- [PyPI Package](https://pypi.org/project/miragic-sdk/)
+- [Website](https://miragic.ai)
+- [Documentation](https://miragic.ai/resources/open-api)
+- [GitHub Repository](https://github.com/Miragic-AI/miragic-sdk)
+- [PyPI Package](https://pypi.org/project/miragic-sdk)
 
 ---
 
