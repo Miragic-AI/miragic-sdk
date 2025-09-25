@@ -1,4 +1,8 @@
-# Miragic SDK
+<p align="center">
+  <a href="https://miragic.ai/products/image-generator" target="_blank">
+    <img alt="" src="https://github.com/user-attachments/assets/0ac37325-df38-46ba-978d-930b5166d9f8" width=500/>
+  </a>  
+</p>
 
 A powerful Python SDK for advanced image processing and manipulation. Transform your images with professional-grade AI-powered tools including background removal, image upscaling, and background blur effects.
 
